@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 12px;
+        color: #333;
+      }
+      h3 {
+        margin-top: 0;
+        margin-bottom: 8px;
+        color: #0b5394;
+        font-size: 16px;
+      }
+      p {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 16px;
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+        background-color: #0b5394;
+        color: #ffffff;
+        border: none;
+        border-radius: 4px;
+        font-size: 13px;
+        font-weight: bold;
+        cursor: pointer;
+        text-align: center;
+        box-sizing: border-box;
+      }
+      .btn:hover {
+        background-color: #073763;
+      }
+      .btn-danger {
+        background-color: #cc0000;
+      }
+      .btn-danger:hover {
+        background-color: #990000;
+      }
+      .btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+      #status {
+        margin-top: 12px;
+        font-size: 12px;
+        font-style: italic;
+        color: #555;
+      }
+    </style>
+  </head>
+  <body>
+    <h3>Billing Tools</h3>
+    <p>These controls stay permanently docked on the right side and will not disappear when filtering rows.</p>
+
+    <button class="btn" onclick="runAction('runEntireProcess')">Run Entire Process</button>
+    <button class="btn" onclick="runAction('outputApprovedRowsByClient')">Output Approved Rows</button>
+    <button class="btn" onclick="runAction('sendOpenItemsToSlack')">Send Open Items to Slack</button>
+    <button class="btn" onclick="runAction('showArchitectureDiagram')">Show Architecture Diagram</button>
+    <button class="btn btn-danger" onclick="runAction('deleteOpenItemsSheet')">Delete Open Items Sheet</button>
+
+    <div id="status"></div>
+
+    <script>
+      function runAction(functionName) {
+        const statusDiv = document.getElementById('status');
+        statusDiv.innerText = 'Running action...';
+        
+        const buttons = document.querySelectorAll('button');
+        buttons.forEach(b => b.disabled = true);
+
+        google.script.run
+          .withSuccessHandler(function() {
+            statusDiv.innerText = 'Action completed successfully.';
+            buttons.forEach(b => b.disabled = false);
+          })
+          .withFailureHandler(function(err) {
+            statusDiv.innerText = 'Error: ' + err.message;
+            buttons.forEach(b => b.disabled = false);
+          })[functionName]();
+      }
+    </script>
+  </body>
+</html>

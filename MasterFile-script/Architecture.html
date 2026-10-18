@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <!-- Load Mermaid JS CDN -->
+    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof mermaid !== 'undefined') {
+          mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            themeVariables: {
+              fontSize: '11px',
+              fontFamily: 'Google Sans, Roboto, Arial, sans-serif'
+            },
+            flowchart: {
+              curve: 'basis',
+              padding: 40,
+              nodeSpacing: 75,
+              rankSpacing: 95,
+              htmlLabels: true
+            }
+          });
+        }
+      });
+    </script>
+    <style>
+      body {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif;
+        padding: 32px;
+        color: #1c1917;
+        background-color: #fafaf9;
+        margin: 0;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #fed7aa;
+        border-radius: 12px;
+        padding: 32px;
+        box-shadow: 0 4px 12px rgba(124, 45, 18, 0.08);
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      h3 {
+        color: #7c2d12;
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #fed7aa;
+        padding-bottom: 12px;
+      }
+      .mermaid {
+        display: flex;
+        justify-content: center;
+        overflow-x: auto;
+        padding: 12px 0;
+      }
+      .mermaid svg {
+        max-width: 100%;
+        height: auto;
+      }
+      /* Custom Mermaid typography & padding to widen shapes and prevent text cutoff */
+      .mermaid label, .mermaid .node label {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif !important;
+        font-size: 11px !important;
+        font-weight: normal !important;
+        line-height: 1.4 !important;
+      }
+      .mermaid .node label div {
+        padding: 12px 40px !important;
+        min-width: 240px !important;
+        box-sizing: border-box;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .mermaid .node rect,
+      .mermaid .node polygon,
+      .mermaid .node circle,
+      .mermaid .node path {
+        min-width: 260px !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h3>Billing Automation System Architecture (HLD)</h3>
+      <div class="mermaid">flowchart TD
+    classDef webStyle fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#7c2d12,font-weight:normal,font-size:11px;
+    classDef coreStyle fill:#fff1f2,stroke:#e11d48,stroke-width:2px,color:#881337,font-weight:normal,font-size:11px;
+    classDef storeStyle fill:#fefce8,stroke:#ca8a04,stroke-width:2px,color:#713f12,font-weight:normal,font-size:11px;
+    classDef extStyle fill:#f0fdf4,stroke:#16a34a,stroke-width:2px,color:#14532d,font-weight:normal,font-size:11px;
+
+    subgraph Presentation["1. Presentation & User Interface"]
+        direction TB
+        Menu["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Google Sheet<br/>Custom Menu ('Billing Tools')&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::webStyle
+        SidebarUI["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sidebar.html<br/>Interactive Action Panel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::webStyle
+        Menu -->|Opens| SidebarUI
+    end
+
+    subgraph CoreEngine["2. Apps Script Processing Core"]
+        direction TB
+        Orchestrator["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;runEntireProcess()<br/>Process Orchestrator&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::coreStyle
+        StatusOutput["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outputStatusRows()<br/>Tab Generator & Extractor&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::coreStyle
+        ApprovedOutput["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;outputApprovedRowsByClient()<br/>Drive Sub-File Exporter&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::coreStyle
+        SlackService["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sendOpenItemsToSlack()<br/>Slack Message Dispatcher&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::coreStyle
+    end
+
+    subgraph StorageLayer["3. Google Workspace Infrastructure"]
+        direction TB
+        MasterSheet[("Active Sheet<br/>('Billing Report')")]:::storeStyle
+        StatusTabs[("Generated Tabs<br/>('Open', 'Cancelled', 'Pending')")]:::storeStyle
+        DriveFolder[("Drive Storage<br/>('SubFile-Output / Archive')")]:::storeStyle
+    end
+
+    subgraph Integrations["4. External Integrations"]
+        direction TB
+        SlackWebhook[("Slack Webhook<br/>(Workflow Builder)")]:::extStyle
+    end
+
+    SidebarUI -->|User Trigger| Orchestrator
+    SidebarUI -->|Export Approved| ApprovedOutput
+    SidebarUI -->|Post Notifications| SlackService
+
+    Orchestrator -->|1. Reset Filters & Fetch Clients| MasterSheet
+    Orchestrator -->|2. Process Status Rows| StatusOutput
+    StatusOutput -->|3. Write Extracted Data| StatusTabs
+
+    Orchestrator -->|4. Export Approved Rows| ApprovedOutput
+    ApprovedOutput -->|5. Archive & Output Sub-Files| DriveFolder
+
+    SlackService -->|6. Read Open/Pending Rows| StatusTabs
+    SlackService -->|7. HTTP POST Payload| SlackWebhook
+      </div>
+    </div>
+  </body>
+</html>

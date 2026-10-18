@@ -1,0 +1,18 @@
+{
+  "timeZone": "Australia/Perth",
+  "dependencies": {
+    "enabledAdvancedServices": [
+      {
+        "userSymbol": "AgentPlatform",
+        "version": "v1",
+        "serviceId": "aiplatform"
+      }
+    ]
+  },
+  "exceptionLogging": "STACKDRIVER",
+  "runtimeVersion": "V8",
+  "webapp": {
+    "executeAs": "USER_ACCESSING",
+    "access": "DOMAIN"
+  }
+}
