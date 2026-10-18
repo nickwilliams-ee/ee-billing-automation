@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <!-- Load Mermaid JS CDN -->
+    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof mermaid !== 'undefined') {
+          mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            themeVariables: {
+              fontSize: '11px',
+              fontFamily: 'Google Sans, Roboto, Arial, sans-serif'
+            },
+            flowchart: {
+              curve: 'basis',
+              padding: 40,
+              nodeSpacing: 75,
+              rankSpacing: 95,
+              htmlLabels: true
+            }
+          });
+        }
+      });
+    </script>
+    <style>
+      body {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif;
+        padding: 32px;
+        color: #1c1917;
+        background-color: #fafaf9;
+        margin: 0;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #fed7aa;
+        border-radius: 12px;
+        padding: 32px;
+        box-shadow: 0 4px 12px rgba(124, 45, 18, 0.08);
+        max-width: 980px;
+        margin: 0 auto;
+      }
+      h3 {
+        color: #7c2d12;
+        font-size: 22px;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 24px;
+        border-bottom: 2px solid #fed7aa;
+        padding-bottom: 12px;
+      }
+      .mermaid {
+        display: flex;
+        justify-content: center;
+        overflow-x: auto;
+        padding: 12px 0;
+      }
+      .mermaid svg {
+        max-width: 100%;
+        height: auto;
+      }
+      /* Custom Mermaid typography & padding to widen shapes and prevent text cutoff */
+      .mermaid label, .mermaid .node label {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif !important;
+        font-size: 11px !important;
+        font-weight: normal !important;
+        line-height: 1.4 !important;
+      }
+      .mermaid .node label div {
+        padding: 12px 40px !important;
+        min-width: 240px !important;
+        box-sizing: border-box;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .mermaid .node rect,
+      .mermaid .node polygon,
+      .mermaid .node circle,
+      .mermaid .node path {
+        min-width: 260px !important;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h3>Billing Automation System Architecture (HLD)</h3>
+      <div class="mermaid">
+flowchart TD
+    classDef webStyle fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#7c2d12,font-weight:normal,font-size:11px;
+    classDef coreStyle fill:#fff1f2,stroke:#e11d48,stroke-width:2px,color:#881337,font-weight:normal,font-size:11px;
+    classDef storeStyle fill:#fefce8,stroke:#ca8a04,stroke-width:2px,color:#713f12,font-weight:normal,font-size:11px;
+
+    subgraph Presentation["1. Presentation & Web Services"]
+        direction TB
+        Menu["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Google Sheet<br/>Custom Menu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::webStyle
+        WebApp["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;doGet()<br/>Web App Endpoint&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::webStyle
+        IndexUI["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Index.html<br/>Architecture View&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::webStyle
+        WebApp -->|Serves| IndexUI
+    end
+
+    subgraph CoreEngine["2. Apps Script Processing Core"]
+        direction TB
+        Main["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;extractSoWData()<br/>Main Engine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::coreStyle
+        ReadText["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;readDocText()<br/>Document Reader&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::coreStyle
+        ParseText["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;findValueForLabel()<br/>Value Matcher&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::coreStyle
+    end
+
+    subgraph StorageLayer["3. Google Workspace Infrastructure"]
+        direction TB
+        Folder[("Drive Parent<br/>Folder")]:::storeStyle
+        DocFile[("Billing SoW<br/>Document")]:::storeStyle
+        ActiveSheet[("Active Sheet<br/>('Example')")]:::storeStyle
+    end
+
+    Menu -->|User Action| Main
+    Main -->|1. Query Folder| Folder
+    Folder -->|2. Retrieve File| DocFile
+    DocFile -->|3. Extract Text| ReadText
+    ReadText -->|4. Return Content| Main
+    ActiveSheet -->|5. Read Column F<br/>Labels| Main
+    Main -->|6. Extract Key<br/>Values| ParseText
+    ParseText -->|7. Return Values| Main
+    Main -->|8. Batch Write<br/>Column G| ActiveSheet
+      </div>
+    </div>
+  </body>
+</html>

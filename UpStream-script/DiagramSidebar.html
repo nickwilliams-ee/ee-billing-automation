@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif;
+        padding: 16px;
+        margin: 0;
+        background-color: #fffbf5;
+        color: #1c1917;
+      }
+      .header-title {
+        font-size: 18px;
+        font-weight: 700;
+        margin-top: 0;
+        margin-bottom: 16px;
+        color: #7c2d12;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .action-card {
+        background: #ffffff;
+        border: 1px solid #fed7aa;
+        border-radius: 10px;
+        padding: 16px;
+        margin-bottom: 20px;
+        box-shadow: 0 2px 4px rgba(124, 45, 18, 0.05);
+      }
+      .btn {
+        display: block;
+        width: 100%;
+        padding: 12px;
+        margin-bottom: 10px;
+        background: linear-gradient(135deg, #ea580c, #c2410c);
+        color: #ffffff;
+        border: none;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 13px;
+        cursor: pointer;
+        text-align: center;
+        text-decoration: none;
+        box-sizing: border-box;
+        transition: all 0.2s ease;
+        box-shadow: 0 1px 3px rgba(234, 88, 12, 0.3);
+      }
+      .btn:hover {
+        background: linear-gradient(135deg, #c2410c, #9a3412);
+        box-shadow: 0 3px 6px rgba(234, 88, 12, 0.4);
+      }
+      .btn-secondary {
+        background: #ffffff;
+        color: #c2410c;
+        border: 1.5px solid #fdba74;
+        box-shadow: none;
+      }
+      .btn-secondary:hover {
+        background-color: #fff7ed;
+        border-color: #f97316;
+      }
+      .status-msg {
+        font-size: 12px;
+        font-weight: 500;
+        margin-top: 8px;
+        min-height: 18px;
+      }
+      .card {
+        background: #ffffff;
+        border: 1px solid #fed7aa;
+        border-radius: 10px;
+        padding: 16px 8px;
+        box-shadow: 0 2px 4px rgba(124, 45, 18, 0.05);
+        overflow-x: auto;
+      }
+      .mermaid {
+        display: flex;
+        justify-content: center;
+      }
+      .mermaid svg {
+        max-width: 100%;
+        height: auto;
+      }
+      /* Custom Mermaid typography & padding to widen shapes and prevent text cutoff */
+      .mermaid label, .mermaid .node label {
+        font-family: 'Google Sans', Roboto, Arial, sans-serif !important;
+        font-size: 10px !important;
+        font-weight: normal !important;
+        line-height: 1.35 !important;
+      }
+      .mermaid .node label div {
+        padding: 10px 32px !important;
+        min-width: 200px !important;
+        box-sizing: border-box;
+        text-align: center;
+        white-space: nowrap;
+      }
+      .mermaid .node rect,
+      .mermaid .node polygon,
+      .mermaid .node circle,
+      .mermaid .node path {
+        min-width: 220px !important;
+      }
+    </style>
+    <script src="https://unpkg.com/mermaid@9.4.3/dist/mermaid.min.js"></script>
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        if (typeof mermaid !== 'undefined') {
+          mermaid.initialize({
+            startOnLoad: true,
+            theme: 'neutral',
+            themeVariables: {
+              fontSize: '10px',
+              fontFamily: 'Google Sans, Roboto, Arial, sans-serif'
+            },
+            flowchart: {
+              curve: 'basis',
+              padding: 35,
+              nodeSpacing: 60,
+              rankSpacing: 85,
+              htmlLabels: true
+            }
+          });
+        }
+      });
+
+      function runExtraction() {
+        const statusEl = document.getElementById('statusMsg');
+        const btn = document.getElementById('extractBtn');
+        btn.disabled = true;
+        statusEl.style.color = '#78350f';
+        statusEl.innerText = 'Extracting SoW data...';
+
+        google.script.run
+          .withSuccessHandler(function() {
+            btn.disabled = false;
+            statusEl.style.color = '#15803d';
+            statusEl.innerText = 'Extraction completed successfully!';
+          })
+          .withFailureHandler(function(err) {
+            btn.disabled = false;
+            statusEl.style.color = '#b91c1c';
+            statusEl.innerText = 'Error: ' + err.message;
+          })
+          .extractSoWData();
+      }
+    </script>
+  </head>
+  <body>
+    <div class="header-title">Billing Automation</div>
+
+    <div class="action-card">
+      <button id="extractBtn" class="btn" onclick="runExtraction()">Extract SoW Data</button>
+      <a id="diagramLink" class="btn btn-secondary" href="<?= webAppUrl ?>" target="_blank">Show Architecture Diagram</a>
+      <div id="statusMsg" class="status-msg"></div>
+    </div>
+
+    <div class="header-title" style="font-size: 15px;">System Architecture (HLD)</div>
+    <div class="card">
+      <div class="mermaid">
+flowchart TD
+    classDef uiStyle fill:#fff7ed,stroke:#ea580c,stroke-width:2px,color:#7c2d12,font-weight:normal,font-size:10px;
+    classDef coreStyle fill:#fff1f2,stroke:#e11d48,stroke-width:2px,color:#881337,font-weight:normal,font-size:10px;
+    classDef dataStyle fill:#fefce8,stroke:#ca8a04,stroke-width:2px,color:#713f12,font-weight:normal,font-size:10px;
+
+    subgraph UI["1. User Interface"]
+        direction TB
+        Menu["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Custom Menu&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::uiStyle
+        Sidebar["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Sidebar Panel&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"]:::uiStyle
+    end
+
+    subgraph Core["2. Apps Script Engine"]
+        direction TB
+        Main["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;extractSoWData()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>Main Controller"]:::coreStyle
+        Read["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;readDocText()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>Document Reader"]:::coreStyle
+        Parse["&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;findValueForLabel()&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<br/>Value Matcher"]:::coreStyle
+    end
+
+    subgraph Data["3. Workspace Storage"]
+        direction TB
+        Folder[("Drive Parent<br/>Folder")]:::dataStyle
+        Doc[("Billing SoW<br/>File / Doc")]:::dataStyle
+        Sheet[("Active Sheet<br/>(Cols F & G)")]:::dataStyle
+    end
+
+    Menu -->|Opens| Sidebar
+    Sidebar -->|1. Trigger| Main
+    Main -->|2. Search| Folder
+    Folder -->|3. Get File| Doc
+    Doc -->|4. Read Raw| Read
+    Read -->|5. Content| Main
+    Sheet -->|6. Col F Labels| Main
+    Main -->|7. Match Value| Parse
+    Parse -->|8. Parsed Text| Main
+    Main -->|9. Write Col G| Sheet
+      </div>
+    </div>
+  </body>
+</html>
